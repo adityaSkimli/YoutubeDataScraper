@@ -1,5 +1,5 @@
 from requests_html import HTMLSession 
-from bs4 import BeautifulSoup as bs 
+from bs4 import BeautifulSoup as bs # importing BeautifulSoup
 import json
 import re
 
@@ -37,7 +37,7 @@ def get_video_info(url):
      # get the video tags
     result["tags"] = ', '.join([ meta.attrs.get("content") for meta in soup.find_all("meta", {"property": "og:video:tag"}) ])
 
-        # Additional video and channel information
+     # Additional video and channel information
     data = re.search(r"var ytInitialData = ({.*?});", soup.prettify()).group(1)
     data_json = json.loads(data)
     videoPrimaryInfoRenderer = data_json['contents']['twoColumnWatchNextResults']['results']['results']['contents'][0]['videoPrimaryInfoRenderer']
@@ -48,20 +48,18 @@ def get_video_info(url):
     result["likes"] = '0' if likes_str == 'No' else likes_str
     result['dislikes'] = 'UNKNOWN'
 
-    # channel details
+     # channel details
     channel_tag = soup.find("meta", itemprop="channelId")['content']
     # channel name
     channel_name = soup.find("span", itemprop="author").next.next['content']
     # channel URL
-    # channel_url = soup.find("span", itemprop="author").next['href']
     channel_url = f"https://www.youtube.com/{channel_tag}"
     # number of subscribers as str
     channel_subscribers = videoSecondaryInfoRenderer['owner']['videoOwnerRenderer']['subscriberCountText']['accessibility']['accessibilityData']['label']
+ 
     result['channel'] = {'name': channel_name, 'url': channel_url, 'subscribers': channel_subscribers}
     
     return result
-
-
 
 if __name__ == "__main__":
     
@@ -69,10 +67,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YouTube Video Data Extractor")
     parser.add_argument("url", help="URL of the YouTube video")
     args = parser.parse_args()
-    url = "args.url"
+    url = args.url
     # get the data
     data = get_video_info(url)
-    # print in nice format
+    # print
     print(f"Title: {data['title']}")
     print(f"Views: {data['views']}")
     print(f"Published at: {data['date_published']}")
